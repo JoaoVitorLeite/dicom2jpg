@@ -10,6 +10,9 @@ import time
 import io
 import concurrent.futures
 
+def _test_dicom_extension(file_path):
+    return file_path.suffix.lower() == '.dcm' or file_path.suffix.lower() == '.dicom'
+
 
 def _dicom_to_img(origin, input_type):
     """
@@ -24,7 +27,7 @@ def _dicom_to_img(origin, input_type):
             raise Exception(f"'{origin}' does not exist")
         elif origin.is_file() is False:
             raise Exception(f"'{origin}' is not a file")
-        elif origin.suffix.lower()!='.dcm':
+        elif not _test_dicom_extension(origin):
             raise Exception('Input file type should be a DICOM file')
     else:
         if type(origin)!=io.BytesIO:
@@ -145,7 +148,6 @@ def _get_LUT_value_LINEAR_normalized(data, window, level):
     # else y = ((x - (c - 0.5)) / (w-1) + 0.5) * (ymax- ymin) + ymin
 
 
-
 def _get_LUT_value_LINEAR_EXACT_normalized(data, window, level):
     """
     Adjust according to VOI LUT, window center(level) and width values
@@ -173,7 +175,7 @@ def _get_LUT_value_LINEAR_EXACT(data, window, level):
     return data
 
 
-def _ds_to_file(file_path, target_root, filetype, anonymous=None, patient_dict=None):
+def _ds_to_file(file_path, target_root, build_path, filetype, anonymous=None, patient_dict=None):
     """
     The aim of this function is to help multiprocessing
     return True if OK
@@ -224,7 +226,12 @@ def _ds_to_file(file_path, target_root, filetype, anonymous=None, patient_dict=N
         pixel_array[:,:,[0,2]] = pixel_array[:,:,[2,0]]
     
     # get full export file path and file name (anonynmous files are pre-calculated and stored in patient_dict)
-    full_export_fp_fn = _get_export_file_path(ds, file_path, target_root, filetype, anonymous, patient_dict)
+    full_export_fp_fn = None
+
+    if not build_path:
+        full_export_fp_fn = Path(os.path.join(target_root, file_path.stem + '.' + filetype))
+    else:
+        full_export_fp_fn = _get_export_file_path(ds, file_path, target_root, filetype, anonymous, patient_dict)
     # make dir
     Path.mkdir(full_export_fp_fn.parent, exist_ok=True, parents=True)
     # write file
@@ -237,7 +244,7 @@ def _ds_to_file(file_path, target_root, filetype, anonymous=None, patient_dict=N
     return True
 
 
-def _dicom_convertor(origin, target_root=None, filetype=None, anonymous=False, multiprocessing=True):
+def _dicom_convertor(origin, target_root=None, build_path=True, filetype=None, anonymous=False, multiprocessing=True):
     """
     origin: can be a .dcm file or a folder
     target_root: root of output files and folders; default: root of origin file or folder
@@ -269,11 +276,11 @@ def _dicom_convertor(origin, target_root=None, filetype=None, anonymous=False, m
     # process image and export files
     if multiprocessing==True:     
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            return_future = [executor.submit(_ds_to_file, file_path, target_root, filetype, anonymous, full_path_dict) 
+            return_future = [executor.submit(_ds_to_file, file_path, target_root, build_path, filetype, anonymous, full_path_dict) 
                              for file_path in dicom_file_list]
             return_message = [future.result() for future in return_future]
     else:
-        return_message = [_ds_to_file(file_path, target_root, filetype, anonymous, full_path_dict) 
+        return_message = [_ds_to_file(file_path, target_root, build_path, filetype, anonymous, full_path_dict) 
                           for file_path in dicom_file_list]
         
     # print out error message
@@ -309,7 +316,7 @@ def _get_root_get_dicom_file_list(origin_input, target_root):
             raise OSError(f"File or folder '{origin}' does not exist")
         # if it is a file, then check if it's a dicom and add it to dicom_file_list
         if origin.is_file():
-            if origin.suffix.lower()!='.dcm':
+            if not _test_dicom_extension(origin):
                 raise Exception('Input file type should be a DICOM file')
             else:
                 dicom_file_list.append(origin)
@@ -317,8 +324,9 @@ def _get_root_get_dicom_file_list(origin_input, target_root):
         elif origin.is_dir():
             for root, sub_f, file in os.walk(origin):
                 for f in file:
-                    if f.lower().endswith('.dcm'):
-                        file_path_dcm = Path(root)/Path(f)
+                    f = Path(f)
+                    if not _test_dicom_extension(f):
+                        file_path_dcm = Path(root)/f
                         # file_path_exp =  folder_destination / Path(f).with_suffix('.jpg')
                         # stor origin / destination
                         dicom_file_list.append(file_path_dcm)

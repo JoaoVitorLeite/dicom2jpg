@@ -33,7 +33,7 @@ def dicom2img(origin):
     """
     return _dicom_to_img(origin, input_type='ds')
 
-def dicom2tiff(origin, target_root=None, anonymous=False, multiprocessing=True):
+def dicom2tiff(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True):
     # under construction
     """
     DICOM -> tiff
@@ -41,22 +41,22 @@ def dicom2tiff(origin, target_root=None, anonymous=False, multiprocessing=True):
     target_root: root of output files and folders
     default target root folder is the root of origin file
     """
-    return _dicom_convertor(origin, target_root, filetype='tiff',
+    return _dicom_convertor(origin, target_root, build_path, filetype='tiff',
                             multiprocessing=multiprocessing, 
                             anonymous=anonymous)
 
-def dicom2jpg(origin, target_root=None, anonymous=False, multiprocessing=True):
+def dicom2jpg(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True):
     """
     DICOM -> jpg
     origin: can be a .dcm file, a folder, or a list/tuple containing file/folders
     target_root: root of output files and folders
     default target root folder is the root of origin file
     """
-    return _dicom_convertor(origin, target_root, filetype='jpg',
+    return _dicom_convertor(origin, target_root, build_path, filetype='jpg',
                             multiprocessing=multiprocessing, 
                             anonymous=anonymous)
 
-def dicom2png(origin, target_root=None, anonymous=False, multiprocessing=True):
+def dicom2png(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True):
     """
     DICOM -> png
     origin: can be a .dcm file, a folder, or a list/tuple containing file/folders
@@ -64,12 +64,12 @@ def dicom2png(origin, target_root=None, anonymous=False, multiprocessing=True):
     default target root folder is the root of origin file
 
     """
-    return _dicom_convertor(origin, target_root, filetype='png',
+    return _dicom_convertor(origin, target_root, build_path, filetype='png',
                             multiprocessing=multiprocessing, 
                             anonymous=anonymous)
 
 
-def dicom2bmp(origin, target_root=None, anonymous=False, multiprocessing=True):
+def dicom2bmp(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True):
     """
     DICOM -> bmp
     origin: can be a .dcm file, a folder, or a list/tuple containing file/folders
@@ -77,6 +77,6 @@ def dicom2bmp(origin, target_root=None, anonymous=False, multiprocessing=True):
     default target root folder is the root of origin file
 
     """
-    return _dicom_convertor(origin, target_root, filetype='bmp',
+    return _dicom_convertor(origin, target_root, build_path, filetype='bmp',
                             multiprocessing=multiprocessing, 
                             anonymous=anonymous)

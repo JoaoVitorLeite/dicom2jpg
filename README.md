@@ -48,14 +48,15 @@ which makes output files looks like what we see on standard DICOM viewers.
 
 - origin can be a single DICOM file, a folder, or a list/tuple of file/folder
 - target_root would be the root folder of the first file/folder if not specified
-- exported files paths would be
+- exported files paths would be if build_path = True
 
     > *target_root / Today / PatientID_Filetype / StudyDate_StudyTime_Modality_AccNum / Ser_Img.Filetype* 
 
-- anonymous files paths would be
+- anonymous files paths would be if build_path_path = True
 
     > *target_root / Today / Patient_SerialNum / ModalitySerialNum_Modality / Ser_Img.Filetype*
 
+- if build_path = False save the output file in folder target_root
 
 `dicom2jpg.dicom2img(origin)`
 
