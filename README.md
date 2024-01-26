@@ -38,13 +38,13 @@ It piplines the lookup transformations by applying Modality LUT, VOI LUT, and Pr
 which makes output files looks like what we see on standard DICOM viewers.
 
 
-`dicom2jpg.dicom2jpg(origin, target_root=None, anonymous=False, multiprocessing=True)`
+`dicom2jpg.dicom2jpg(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True)`
 
-`dicom2jpg.dicom2png(origin, target_root=None, anonymous=False, multiprocessing=True)`
+`dicom2jpg.dicom2png(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True)`
 
-`dicom2jpg.dicom2bmp(origin, target_root=None, anonymous=False, multiprocessing=True)`
+`dicom2jpg.dicom2bmp(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True)`
 
-`dicom2jpg.dicom2tiff(origin, target_root=None, anonymous=False, multiprocessing=True)`
+`dicom2jpg.dicom2tiff(origin, target_root=None, build_path=True, anonymous=False, multiprocessing=True)`
 
 - origin can be a single DICOM file, a folder, or a list/tuple of file/folder
 - target_root would be the root folder of the first file/folder if not specified
